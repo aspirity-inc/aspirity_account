@@ -1,0 +1,16 @@
+{
+	"$aspirity_account_browse_title": "Invoices",
+	"$aspirity_account_invoice_page_Address_actual_title": "Actual address",
+	"$aspirity_account_invoice_page_Address_ref_title": "Registered address",
+	"$aspirity_account_invoice_page_Contractor_title": "Contractor",
+	"$aspirity_account_invoice_page_Name_full_title": "Full name",
+	"$aspirity_account_invoice_page_Name_short_title": "Name short",
+	"$aspirity_account_invoice_page_Number_title": "Invoice number",
+	"$aspirity_account_invoice_page_Status_title": "Status",
+	"$aspirity_account_invoice_page_Subject_title": "Subject",
+	"$aspirity_account_invoice_page_title": "Invoice",
+	"$aspirity_account_sign_in_name_label": "Username",
+	"$aspirity_account_sign_in_pass_label": "Password",
+	"$aspirity_account_sign_in_submit_label": "Submit",
+	"$aspirity_account_sign_in_title": "Sign in"
+}
