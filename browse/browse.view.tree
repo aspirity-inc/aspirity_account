@@ -1,0 +1,8 @@
+$aspirity_account_browse $mol_page
+	title @ \Account list
+	body / <= List $mol_list
+		rows <= links /
+	Link!id $mol_link
+		arg *
+			account <= account_link!id \
+		sub / <= account_title!id \

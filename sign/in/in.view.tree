@@ -1,0 +1,19 @@
+$aspirity_account_sign_in $mol_page
+	title @ \Sign in
+	body / <= Sign_in $mol_form
+		form_fields /
+			<= Name_field $mol_form_field
+				name <= name_label @ \Username
+				bid <= name_bid \
+				control <= Name_control $mol_string
+					value?val <=> name?val \helpmate
+			<= Pass_field $mol_form_field
+				name <= pass_label @ \Password
+				bid <= pass_bid \
+				control <= Pass_control $mol_string
+					value?val <=> pass?val \Aspirity2015
+					type \password
+		buttons /
+			<= Submit $mol_button_major
+				title <= submit_label @ \Submit
+				click?val <=> submit?val null
