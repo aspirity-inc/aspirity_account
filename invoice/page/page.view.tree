@@ -1,0 +1,37 @@
+$aspirity_account_invoice_page $mol_page
+	domain $aspirity_account_domain
+	invoice $aspirity_account_invoice
+	title @ \Invoice
+	statuses *
+		draft \Draft
+	body /
+		<= Info $mol_row
+			sub /
+				<= Subject $mol_labeler
+					title @ \Subject
+					content / <= subject \
+				<= Number $mol_labeler
+					title @ \Invoice number
+					content / <= number \
+				<= Status $mol_labeler
+					title @ \Status
+					content / <= status \
+				<= Contractor $mol_labeler
+					title @ \Contractor
+					content / <= contractor \
+		<= Company $mol_row
+			sub /
+				<= Logo $mol_image2
+					background <= logo \
+				<= Name_full $mol_labeler
+					title @ \Full name
+					content / <= name_full \
+				<= Name_short $mol_labeler
+					title @ \Name short
+					content / <= name_short \
+				<= Address_actual $mol_labeler
+					title @ \Actual address
+					content / <= address_actual \
+				<= Address_ref $mol_labeler
+					title @ \Registered address
+					content / <= address_reg \

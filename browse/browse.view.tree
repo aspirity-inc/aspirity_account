@@ -1,8 +1,10 @@
 $aspirity_account_browse $mol_page
-	title @ \Account list
-	body / <= List $mol_list
-		rows <= links /
+	domain $aspirity_account_domain
+	title @ \Invoices
+	body /
+		<= List $mol_list
+			rows <= links /
 	Link!id $mol_link
 		arg *
-			account <= account_link!id \
-		sub / <= account_title!id \
+			invoice <= invoice_link!id \
+		sub / <= invoice_title!id \

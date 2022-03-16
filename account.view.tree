@@ -1,4 +1,9 @@
 $aspirity_account $mol_book2
+	domain $aspirity_account_domain
 	pages /
 		<= Sign_in $aspirity_account_sign_in
 		<= Browse $aspirity_account_browse
+			domain <= domain
+	Invoice!id $aspirity_account_invoice_page
+		invoice <= invoice!id $aspirity_account_invoice
+		domain <= domain
