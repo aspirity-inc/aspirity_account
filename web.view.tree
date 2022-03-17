@@ -33,6 +33,55 @@ $mol_page $mol_view
 			dom_name \footer
 			sub <= foot /$mol_view
 
+$mol_svg $mol_view
+	dom_name \svg
+	dom_name_space \http://www.w3.org/2000/svg
+	font_size 16
+	font_family \
+	style_size *
+
+$mol_svg_root $mol_svg
+	dom_name \svg
+	attr *
+		^
+		viewBox <= view_box \0 0 100 100
+		preserveAspectRatio <= aspect \xMidYMid
+
+$mol_svg_path $mol_svg
+	dom_name \path
+	attr *
+		^
+		d <= geometry \
+
+
+$mol_icon $mol_svg_root
+	view_box \0 0 24 24
+	minimal_width 16
+	minimal_height 16
+	sub /
+		<= Path $mol_svg_path
+			geometry <= path \
+
+$mol_icon_download $mol_icon path \M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z
+
+$mol_link $mol_view
+	dom_name \a
+	attr *
+		^
+		href <= uri \
+		title <= hint \
+		target <= target \_self
+		download <= file_name \
+		mol_link_current <= current false
+	sub /$mol_view_content
+		<= title
+	arg *
+	event *
+		^
+		click?event <=> click?event <=> event_click?event null
+
+$mol_icon_cross $mol_icon path \M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z
+
 $mol_list $mol_view
 	render_visible_only true
 	render_over 0
@@ -56,19 +105,28 @@ $mol_labeler $mol_list
 
 $mol_row $mol_view
 
-$mol_image2 $mol_view
-	links /
-	aspect 1
-	sub /
-		<= Content $mol_view
-			style *
-				paddingTop <= height \100%
-				backgroundImage <= background \
+$mol_image $mol_view
+	dom_name \img
+	field *
+		^
+		src <= uri \
+		alt <= title
+		loading <= loading \eager
 
 $aspirity_account_invoice_page $mol_page
 	domain $aspirity_account_domain
 	invoice $aspirity_account_invoice
-	title @ \Invoice
+	tools /
+		<= Download $mol_link
+			hint @ \Download PDF
+			uri <= download_link \https://www.google.com/search?q=PDF+not+working
+			sub /
+				<= Download_icon $mol_icon_download
+		<= Close $mol_link
+			hint @ \Close page
+			arg * invoice null
+			sub / <= Close_icon $mol_icon_cross
+	title <= invoice_title \
 	statuses *
 		draft \Draft
 	body /
@@ -88,20 +146,23 @@ $aspirity_account_invoice_page $mol_page
 					content / <= contractor \
 		<= Company $mol_row
 			sub /
-				<= Logo $mol_image2
-					background <= logo \
 				<= Name_full $mol_labeler
 					title @ \Full name
 					content / <= name_full \
 				<= Name_short $mol_labeler
 					title @ \Name short
 					content / <= name_short \
+		<= Address_row $mol_row
+			sub /
 				<= Address_actual $mol_labeler
 					title @ \Actual address
 					content / <= address_actual \
-				<= Address_ref $mol_labeler
+				<= Address_reg $mol_labeler
 					title @ \Registered address
 					content / <= address_reg \
+		<= Logo $mol_image
+			uri <= logo \
+			title @ \Logo
 
 $mol_hotkey $mol_plugin
 	event *
@@ -202,47 +263,585 @@ $aspirity_account_sign_in $mol_page
 	body / <= Sign_in $mol_form
 		form_fields /
 			<= Name_field $mol_form_field
-				name <= name_label @ \Username
+				name @ \Username
 				bid <= name_bid \
 				control <= Name_control $mol_string
 					value?val <=> name?val \helpmate
 			<= Pass_field $mol_form_field
-				name <= pass_label @ \Password
+				name @ \Password
 				bid <= pass_bid \
 				control <= Pass_control $mol_string
 					value?val <=> pass?val \Aspirity2015
 					type \password
 		buttons /
 			<= Submit $mol_button_major
-				title <= submit_label @ \Submit
+				title @ \Submit
 				click?val <=> submit?val null
 
-$mol_link $mol_view
-	dom_name \a
+$mol_icon_plus $mol_icon path \M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z
+
+$mol_icon_filter $mol_icon path \M14,12V19.88C14.04,20.18 13.94,20.5 13.71,20.71C13.32,21.1 12.69,21.1 12.3,20.71L10.29,18.7C10.06,18.47 9.96,18.16 10,17.87V12H9.97L4.21,4.62C3.87,4.19 3.95,3.56 4.38,3.22C4.57,3.08 4.78,3 5,3V3H19V3C19.22,3 19.43,3.08 19.62,3.22C20.05,3.56 20.13,4.19 19.79,4.62L14.03,12H14Z
+
+$mol_icon_logout $mol_icon path \M16,17V14H9V10H16V7L21,12L16,17M14,2C15.1,2 16,2.9 16,4V6H14V4H5V20H14V18H16V20C16,21.1 15.1,22 14,22H5C3.9,22 3,21.1 3,20V4C3,2.9 3.9,2 5,2H14Z
+
+$mol_icon_logout_variant $mol_icon path \M14.08,15.59L16.67,13H7V11H16.67L14.08,8.41L15.5,7L20.5,12L15.5,17L14.08,15.59M19,3C20.1,3 21,3.9 21,5V9.67L19,7.67V5H5V19H19V16.33L21,14.33V19C21,20.1 20.1,21 19,21H5C3.89,21 3,20.1 3,19V5C3,3.89 3.89,3 5,3H19Z
+
+$mol_paragraph $mol_view
+	line_height 24
+	letter_width 7
+	width_limit Infinity
+	sub / <= title
+
+$mol_dimmer $mol_paragraph
+	haystack \
+	needle \
+	sub <= parts /$mol_view_content
+	Low!id $mol_paragraph
+		sub /
+			<= string!id \
+	High!id $mol_paragraph
+		sub /
+			<= string!id \
+
+$mol_pop $mol_view
+	event * keydown?event <=> keydown?event null
+	showed?val false
+	align_vert \
+	align_hor \
+	sub /
+		<= Anchor null
+	sub_visible /
+		<= Anchor
+		<= Bubble $mol_pop_bubble
+			align <= align \bottom_center
+			content <= bubble_content /$mol_view_content
+			height_max <= height_max 9999
+
+$mol_pop_bubble $mol_scroll
+	sub <= content /$mol_view_content
+	style *
+		^
+		maxHeight <= height_max 9999
 	attr *
 		^
-		href <= uri \
-		title <= hint \
-		target <= target \_self
-		download <= file_name \
-		mol_link_current <= current false
-	sub /$mol_view_content
-		<= title
-	arg *
+		mol_pop_align <= align \
+		tabindex 0
+
+$mol_button_minor $mol_button_typed
+
+$mol_nav $mol_plugin
+	cycle?val false
+	-
+	mod_ctrl false
+	mod_shift false
+	mod_alt false
+	-
+	keys_x?val /
+	keys_y?val /
+	-
+	current_x?val null
+	current_y?val null
+	-
+	event_up?event null
+	event_down?event null
+	event_left?event null
+	event_right?event null
 	event *
 		^
-		click?event <=> click?event <=> event_click?event null
+		keydown?event <=> event_key?event null
+
+$mol_search $mol_pop
+	query?val \
+	suggests /string
+	plugins /$mol_plugin
+		^
+		<= Hotkey $mol_hotkey
+			key * escape?val <=> clear?val null
+		<= Nav $mol_nav
+			keys_y <= nav_components /$mol_view
+			current_y?component <=> nav_focused?component null
+	showed?val <=> suggests_showed?val false
+	align_hor \right
+	Anchor $mol_view
+		sub <= anchor_content /
+			<= Query $mol_string
+				value?val <=> query?val \
+				hint <= hint @ \Search...
+				submit?event <=> submit?event null
+				enabled <= enabled true
+			<= Clear $mol_button_minor
+				hint @ \Clear
+				click?event <=> clear?event null
+				sub /
+					<= Clear_icon $mol_icon_cross
+	bubble_content /$mol_view_content
+		<= Menu $mol_list
+			rows <= menu_items /$mol_view
+	Suggest!id $mol_button_minor
+		click?event <=> suggest_select!id?event null
+		sub <= suggest_content!id /$mol_view_content
+			<= Suggest_label!id $mol_dimmer
+				haystack <= suggest_label!id \
+				needle <= query?val \
+
+$mol_check $mol_button_minor
+	attr *
+		^
+		mol_check_checked <= checked?val false
+		aria-checked <= checked?val false
+		role \checkbox
+	sub /$mol_view_content
+		<= Icon null
+		<= label /
+			<= Title $mol_view
+				sub /
+					<= title \
+
+$mol_pick $mol_pop
+	Anchor <= Trigger $mol_check
+		minimal_width 40
+		minimal_height 40
+		enabled <= trigger_enabled true
+		checked?val <=> showed?val
+		sub <= trigger_content /$mol_view_content
+		hint <= hint \
+
+$mol_icon_dots_vertical $mol_icon path \M12,16C13.1,16 14,16.9 14,18C14,19.1 13.1,20 12,20C10.9,20 10,19.1 10,18C10,16.9 10.9,16 12,16M12,10C13.1,10 14,10.9 14,12C14,13.1 13.1,14 12,14C10.9,14 10,13.1 10,12C10,10.9 10.9,10 12,10M12,4C13.1,4 14,4.9 14,6C14,7.1 13.1,8 12,8C10.9,8 10,7.1 10,6C10,4.9 10.9,4 12,4Z
+
+$mol_select $mol_pick
+	dictionary?val *
+	options /string
+	value?val \
+	Option_row!id $mol_button_minor
+		event_click?event <=> event_select!id?event null
+		sub <= option_content!id /
+			<= Option_label!id $mol_dimmer
+				haystack <= option_label!id \
+				needle <= filter_pattern?val \
+	No_options $mol_view
+		sub /
+			<= no_options_message @ \No options
+	plugins /
+		^
+		<= Nav $mol_nav
+			keys_y <= nav_components /$mol_view
+			current_y?component <=> option_focused?component null
+			cycle?val <=> nav_cycle?val true
+	hint @ \Pick..
+	bubble_content /
+		<= Filter
+		<= Menu $mol_list
+			rows <= menu_content /$mol_view
+	Filter $mol_string
+		value?val <=> filter_pattern?val \
+		hint @ \Filter..
+		submit?event <=> submit?event null
+		enabled <= enabled true
+	Trigger_icon $mol_icon_dots_vertical
 
 $aspirity_account_browse $mol_page
+	filter false
 	domain $aspirity_account_domain
 	title @ \Invoices
-	body /
+	tools /
+		<= New $mol_link
+			arg * new \
+			sub / <= New_icon $mol_icon_plus
+		<= Filter_toggle $mol_link
+			arg *
+				filter \
+				filter_subject null
+				filter_company null
+				filter_contractor null
+			sub / <= Filter_toggle_icon $mol_icon_filter
+		<= Sign_out $mol_button_typed
+			click?val <=> sign_out?val null
+			sub / <= Sign_out_icon $mol_icon_logout_variant
+	body <= page_body /
 		<= List $mol_list
 			rows <= links /
 	Link!id $mol_link
 		arg *
 			invoice <= invoice_link!id \
-		sub / <= invoice_title!id \
+		sub /
+			<= Invoice_title!id $mol_dimmer
+				haystack <= invoice_title!id \
+				needle <= query
+	Filter $mol_view
+		sub /
+			<= Search $mol_search
+				query?val <=> query?val \
+				suggests <= suggests / 
+			- <= Select $mol_view
+				sub /
+					<= Subject $aspirity_account_browse_select
+						value?val <=> filter_subject?val \
+						options <= filter_subject_options /
+						title @ \Subject
+					<= Company $aspirity_account_browse_select
+						value?val <=> filter_company?val \
+						options <= filter_company_options /
+						title @ \Company
+					<= Contractor $aspirity_account_browse_select
+						value?val <=> filter_contractor?val \
+						options <= filter_contractor_options /
+						title @ \Contractor
+$aspirity_account_browse_select $mol_select
+	title \
+	Clear $mol_button_minor
+		hint @ \Clear
+		click?event <=> clear?event null
+		sub /
+			<= Clear_icon $mol_icon_cross
+
+$mol_bar $mol_view
+
+$mol_text_code_token $mol_dimmer
+	attr *
+		^
+		mol_text_code_token_type <= type \
+
+$mol_text_code_token_link $mol_text_code_token
+	dom_name \a
+	type \code-link
+	attr *
+		^
+		href <= haystack \
+		target \_blank
+
+$mol_text_code_row $mol_paragraph
+	text \
+	minimal_height 24
+	numb_showed true
+	Numb $mol_view
+		sub /
+			<= numb 0
+	Token!id $mol_text_code_token
+		type <= token_type!id \
+		haystack <= token_text!id \
+		needle <= highlight \
+	Token_link!id $mol_text_code_token_link
+		haystack <= token_text!id \
+		needle <= highlight \
+
+$mol_text_code $mol_list
+	attr *
+		^
+		mol_text_code_sidebar_showed <= sidebar_showed false
+	text \
+	text_lines /string
+	Row!id $mol_text_code_row
+		numb_showed <= sidebar_showed
+		numb <= row_numb!id 0
+		text <= row_text!id \
+		highlight <= highlight \
+
+$mol_textarea $mol_view
+	attr *
+		^
+		mol_textarea_clickable <= clickable?val false
+		mol_textarea_sidebar_showed <= sidebar_showed false
+	event *
+		keydown?event <=> press?event null
+		pointermove?event <=> hover?event null
+	sub /
+		<= Edit $mol_textarea_edit
+			value?val <=> value?val \
+			hint <= hint \ 
+			enabled <= enabled true
+			length_max <= length_max Infinity
+			selection?val <=> selection?val /number
+		<= View $mol_text_code
+			text <= value
+			render_visible_only false
+			row_numb!index <= row_numb!index 0
+			sidebar_showed <= sidebar_showed
+			highlight <= highlight \
+
+$mol_textarea_edit $mol_string
+	dom_name \textarea
+	field *
+		^
+		scrollTop 0
+
+$mol_icon_calendar $mol_icon path \M19,19H5V8H19M16,1V3H8V1H6V3H5C3.89,3 3,3.89 3,5V19C3,20.1 3.9,21 5,21H19C20.1,21 21,20.1 21,19V5C21,3.89 20.1,3 19,3H18V1M17,12H12V17H17V12Z
+
+$mol_icon_chevron $mol_icon path \M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z
+
+$mol_icon_chevron_left $mol_icon path \M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z
+
+$mol_icon_chevron_right $mol_icon path \M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z
+
+$mol_hor $mol_view
+
+$mol_calendar $mol_list
+	sub /
+		<= Head $mol_view
+			sub <= head /
+				<= Title $mol_view
+					minimal_height 24
+					sub /
+						<= title \
+		<= Weekdays $mol_hor
+			sub <= weekdays /$mol_view
+	weeks /$mol_view
+	-
+	Weekday!index $mol_calendar_day
+		holiday <= weekend!index false
+		sub /
+			<= weekday!index \
+	-
+	Week!row $mol_hor
+		sub <= week_days!row /$mol_view
+	-
+	Day!day $mol_calendar_day
+		ghost <= day_ghost!day false
+		holiday <= day_holiday!day false
+		selected <= day_selected!day false
+		theme <= day_theme!day \
+		sub <= day_content!day /
+			<= day_text!day \
+	-
+	month_string \
+	month_moment $mol_time_moment
+
+$mol_calendar_day $mol_view
+	minimal_height 24
+	minimal_width 36
+	attr *
+		mol_calendar_holiday <= holiday false
+		mol_calendar_ghost <= ghost false
+		mol_calendar_selected <= selected false
+		mol_theme <= theme \
+
+$mol_date $mol_pick
+	Icon $mol_icon_calendar
+	-
+	bubble_content /
+		<= Input $mol_string
+			value?val <=> value?val \
+			hint <= hint \YYYY-MM-DD hh:mm
+			enabled <= enabled true
+		<= Calendar $mol_date_calendar
+			month_moment <= month_moment <= value_moment
+			day_selected!day <= day_selected!day false
+			day_click!day?event <=> day_click!day?event null
+			Title => Calendar_title
+			head /
+				<= Calendar_tools $mol_view
+					sub /
+						<= Prev $mol_button_minor
+							hint <= prev_hint @ \Previous month
+							click?event <=> prev?event null
+							sub /
+								<= Prev_icon $mol_icon_chevron_left
+						<= Calendar_title
+						<= Next $mol_button_minor
+							hint <= next_hint @ \Next month
+							click?event <=> next?event null
+							sub /
+								<= Next_icon $mol_icon_chevron_right
+	-
+	value_number?val NaN
+	value_moment?val $mol_time_moment
+
+$mol_date_calendar $mol_calendar
+	day_content!day /
+		<= Day_button!day $mol_button_minor
+			title <= day_text!day
+			event_click?event <=> day_click!day?event null
+			minimal_height 24
+
+$aspirity_account_new $mol_page
+	title @ \Creating an invoice
+	body /
+		<= List $mol_list
+			rows /
+				<= New $mol_form
+					form_fields /
+						<= Subject $mol_form_field
+							name @ \Subject
+							bid <= subject_bid \
+							control <= Subject_control $mol_string
+								value?val <=> subject?val \
+						<= Number $mol_form_field
+							name @ \Invoice number
+							bid <= number_bid \
+							control <= Number_control $mol_string
+								value?val <=> number?val \
+						<= Status $mol_form_field
+							name @ \Status
+							bid <= status_bid \
+							control <= Status_control $mol_select
+								value?val <=> status?val \
+								dictionary <= status_dict *
+						<= Contractor $mol_form_field
+							name @ \Contractor
+							bid <= contractor_bid \
+							control <= Contractor_control $mol_bar
+								sub /
+									<= Contractor_select $mol_select
+										value?val <=> contractor?val \
+										dictionary <= contractor_dict *
+									<= Contractor_add $mol_link
+										arg * contractor \
+										sub / <= Contractor_add_icon $mol_icon_plus
+						<= Contact $mol_form_field
+							name @ \Contact person
+							bid <= contact_bid \
+							control <= Contact_control $mol_bar
+								sub /
+									<= Contact_select $mol_select
+										value?val <=> contact?val \
+										dictionary <= contact_dict *
+									<= Contact_add $mol_link
+										arg * contact \
+										sub / <= Contact_add_icon $mol_icon_plus
+						<= Terms $mol_form_field
+							name @ \Terms & Conditions
+							bid <= terms_bid \
+							control <= Terms_control $mol_textarea
+								minimal_height 120
+								value?val <=> terms?val \
+						<= Date $mol_form_field
+							name @ \Date of payment
+							bid <= date_bid \
+							control <= Date_control $aspirity_account_new_date
+								value?val <=> date?val \
+						<= Invoice $mol_form_field
+							name @ \Printed invoice form
+							bid <= invoice_bid \
+							control <= Invoice_control $mol_select
+								value?val <=> invoice?val \
+								dictionary <= invoice_dict *
+						<= Company $mol_form_field
+							name @ \Company
+							bid <= company_bid \
+							control <= Company_control $mol_select
+								value?val <=> company?val \
+								dictionary <= company_dict *
+						<= Currency $mol_form_field
+							name @ \Currency
+							bid <= currency_bid \
+							control <= Currency_control $mol_select
+								value?val <=> currency?val \
+								dictionary <= currency_dict *
+						<= Table_field $mol_form_field
+							label /
+							Content <= Table_content $mol_view
+								sub <= table_content /
+									<= Table $mol_list
+										rows <= rows /
+					buttons /
+						<= Add $mol_button_major
+							title @ \Add row
+							click?val <=> row_add?val null
+						<= Total $mol_labeler
+							title @ \Total
+							content / <= total \0
+	Row!id $mol_form
+		form_fields /
+			<= People!id $mol_form_field
+				name @ \People
+				bid <= people_bid!id \
+				control <= People_control!id $mol_select
+					value?val <=> people!id?val \
+			<= Position!id $mol_form_field
+				name @ \Position
+				bid <= position_bid!id \
+				control <= Position_control!id $mol_select
+					value?val <=> position!id?val \
+			<= Rate!id $mol_form_field
+				name @ \Rate
+				bid <= rate_bid!id \
+				control <= Rate_control!id $mol_string
+					value?val <=> rate!id?val \0
+			<= Time!id $mol_form_field
+				name @ \Hours
+				bid <= time_bid!id \
+				control <= Time_control!id $mol_string
+					value?val <=> time!id?val \0
+			<= Price!id $mol_form_field
+				name @ \Price
+				Content <= Price_content!id $mol_view
+					sub / <= price!id \0
+$aspirity_account_new_date $mol_date
+	hint \YYYY-MM-DD
+
+$aspirity_account_contact $mol_page
+	title @ \New contact person
+	body /
+		<= Form $mol_form
+			form_fields /
+				<= Name $mol_form_field
+					name @ \Name
+					bid <= name_bid \
+					control <= Name_control $mol_string
+						value?val <=> name?val \
+				<= Phone $mol_form_field
+					name @ \Phone
+					bid <= phone_bid \
+					control <= Phone_control $mol_string
+						value?val <=> phone?val \
+				<= Email $mol_form_field
+					name @ \Email
+					bid <= email_bid \
+					control <= Email_control $mol_string
+						value?val <=> email?val \
+				<= Comment $mol_form_field
+					name @ \Comment
+					bid <= comment_bid \
+					control <= Comment_control $mol_textarea
+						value?val <=> comment?val \
+			buttons /
+				<= Submit $mol_button_major
+					title @ \Create
+					click?val <=> submit?val null
+					enabled <= enabled?val true
+
+$aspirity_account_contact_select $mol_view
+	sub /
+		<= Select $mol_select
+			value?val <=> value?val \
+			dictionary <= dict *
+		<= Add $mol_link
+			arg * contact \
+			sub / <= Add_icon $mol_icon_plus
+
+$aspirity_account_contractor $mol_page
+	title @ \New contractor
+	body /
+		<= Form $mol_form
+			form_fields /
+				<= Company $mol_form_field
+					name @ \Company name
+					bid <= company_bid \
+					control <= Company_control $mol_string
+						value?val <=> company?val \
+				<= Phone $mol_form_field
+					name @ \Phone
+					bid <= phone_bid \
+					control <= Phone_control $mol_string
+						value?val <=> phone?val \
+				<= Email $mol_form_field
+					name @ \Email
+					bid <= email_bid \
+					control <= Email_control $mol_string
+						value?val <=> email?val \
+				<= Comment $mol_form_field
+					name @ \Comment
+					bid <= comment_bid \
+					control <= Comment_control $mol_textarea
+						value?val <=> comment?val \
+				<= Contact $mol_form_field
+					name @ \Contact person
+					bid <= contact_bid \
+					control <= Contact_control $aspirity_account_contact_select
+						value?val <=> contact?val \
+			buttons /
+				<= Submit $mol_button_major
+					title @ \Create
+					click?val <=> submit?val null
 
 $aspirity_account $mol_book2
 	domain $aspirity_account_domain
@@ -250,6 +849,163 @@ $aspirity_account $mol_book2
 		<= Sign_in $aspirity_account_sign_in
 		<= Browse $aspirity_account_browse
 			domain <= domain
+			filter <= filter_enabled false
+		<= New $aspirity_account_new
+		<= Contractor $aspirity_account_contractor
+		<= Contact $aspirity_account_contact
 	Invoice!id $aspirity_account_invoice_page
 		invoice <= invoice!id $aspirity_account_invoice
 		domain <= domain
+	Placeholder $mol_page
+		Title null
+		Tools null
+
+$mol_float $mol_view
+	style *
+		^
+		minHeight \auto
+
+$mol_check_expand $mol_check
+	minimal_height 40
+	Icon $mol_icon_chevron
+	level 0
+	style *
+		^
+		paddingLeft <= level_style \0px
+	checked?val <=> expanded?val false
+	enabled <= expandable false
+
+$mol_grid $mol_view
+	row_height 32
+	row_ids /string[]
+	row_id!index null
+	col_ids /
+	records *
+	record!id null
+	hierarchy null
+	hierarchy_col \
+	minimal_width 0
+	-
+	sub /
+		<= Head
+		<= Table $mol_grid_table
+			sub <= rows /$mol_view
+	Head $mol_grid_row
+		cells <= head_cells /$mol_view
+	Row!id $mol_grid_row
+		minimal_height <= row_height
+		minimal_width <= minimal_width
+		cells <= cells!id /$mol_view
+	-
+	Cell!id $mol_view
+	cell!id null
+	Cell_text!id $mol_grid_cell
+		sub <= cell_content_text!id <= cell_content!id /$mol_view_content
+	Cell_number!id $mol_grid_number
+		sub <= cell_content_number!id <= cell_content!id /$mol_view_content
+	Col_head!id $mol_float
+		dom_name \th
+		sub <= col_head_content!id /$mol_view_content
+	Cell_branch!id $mol_check_expand
+		level <= cell_level!id 0
+		label <= cell_content!id /$mol_view_content
+		expanded?val <=> cell_expanded!id?val false
+	Cell_content!id /
+		<= Cell_dimmer!id $mol_dimmer
+			needle <= needle \
+			haystack <= cell_value!id \
+
+$mol_grid_table $mol_list
+	dom_name \table
+
+$mol_grid_row $mol_view
+	dom_name \tr
+	sub <= cells /$mol_view
+
+$mol_grid_cell $mol_view
+	dom_name \td
+	minimal_height 40
+
+$mol_grid_number $mol_grid_cell
+
+$mol_link_iconed $mol_link
+	sub /
+		<= Icon $mol_image
+			uri <= icon \
+			title \
+	content /
+		<= title <= uri
+	host \
+
+$mol_text $mol_list
+	uri_base \
+	text \
+	tokens /
+	Quote!id $mol_text
+		text <= quote_text!id \
+	Row!id $mol_text_row
+		sub <= block_content!id /
+		type <= block_type!id \
+	Span!id $mol_text_span
+	String!id $mol_text_string
+		needle <= highlight \
+	Link!id $mol_text_link
+		target <= link_target!id \_blank
+	Image!id $mol_text_image
+	Header!id $mol_text_header
+		level <= header_level!id 0
+		content <= header_content!id /
+	Code!id $mol_text_code
+		text <= code_text!id \
+		highlight <= highlight \
+	Table!id $mol_grid
+		head_cells <= table_head_cells!id /
+		rows <= table_rows!id /
+	Table_row!id $mol_grid_row
+		cells <= table_cells!id /
+	Table_cell!id $mol_grid_cell
+		sub <= table_cell_content!id /
+	Table_cell_head!id $mol_float
+		sub <= table_cell_content!id /
+
+$mol_text_row $mol_paragraph
+	attr *
+		^
+		mol_text_type <= type \
+
+$mol_text_header $mol_paragraph
+	dom_name \h
+	attr *
+		^
+		mol_text_header_level <= level?val 0
+	sub <= content /
+
+$mol_text_span $mol_paragraph
+	dom_name \span
+	attr *
+		^
+		mol_text_type <= type?val \
+	sub <= content?val /
+
+$mol_text_string $mol_dimmer
+	dom_name \span
+	haystack?val \
+
+$mol_text_link $mol_link_iconed
+	attr *
+		^
+		mol_text_type <= type?val \
+	uri <= link?val \
+	content?val /
+
+$mol_text_image $mol_view
+	dom_name \object
+	attr *
+		^
+		allowfullscreen true
+		mol_text_type <= type?val \
+		data <= link?val \
+	sub /
+		<= Image $mol_image
+			uri <= link
+			title <= title?val \
