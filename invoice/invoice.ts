@@ -5,6 +5,11 @@ namespace $ {
 	const Arr = $mol_data_array
 	const Num = $mol_data_number
 
+	export const $aspirity_account_invoice_response_dict = Arr(Rec({
+		_id: Str,
+		name: Str,
+	}))
+
 	const Res_list_invoice = Rec({
 		_id: Str,
 		companyName: Str,
@@ -37,7 +42,7 @@ namespace $ {
 		swift: Str,
 	})
 
-	const Res_invoice_company = Rec({
+	export const $aspirity_account_invoice_response_company = Rec({
 		bank_details: Res_invoice_bank,
 		fact_address: Str,
 		jur_address: Str,
@@ -48,7 +53,7 @@ namespace $ {
 	})
 
 	const Res_invoice = Rec({
-		companyDetails: Res_invoice_company,
+		companyDetails: $aspirity_account_invoice_response_company,
 		accountNumber: Str,
 		contractorName: Str,
 		id: Str,
@@ -67,11 +72,11 @@ namespace $ {
 		employeesNames: readonly string[]
 		theme: string
 		logo: string
-		// Load lazy
+		// load lazy
 		id?: string
 		status?: string
 		accountNumber?: string
-		companyDetails?: typeof Res_invoice_company.Value
+		companyDetails?: typeof $aspirity_account_invoice_response_company.Value
 		// load status
 		loaded?: boolean
 	}
@@ -89,8 +94,10 @@ namespace $ {
 		data( next?: Invoice_dict ) {
 			if( next !== undefined ) return next
 
-			const res = this.$.$aspirity_account_transport.load( 'invoice/list.json' )
+			const res = this.$.$aspirity_account_transport.load( '_next/data/CyYy66KHAhtQN5bEooLAa/invoice/list.json' )
 			const { pageProps: { filterProps, invoices } } = Res_list_page( res )
+
+			this.filter( filterProps )
 			
 			const dict: Invoice_dict = {}
 			for( const item of invoices ) {
@@ -100,17 +107,11 @@ namespace $ {
 			return dict
 		}
 
-		@ $mol_mem_key
-		load_full( id: string ) {
-			const { [id]: item , ...dict } = this.data()
-			if ( !item.loaded ) {
-				const res = this.$.$aspirity_account_transport.load( `invoice/${id}.json` )
-				const { pageProps } = Res_invoice_page( res )
-				const merged = Object.assign( item , pageProps, { loaded: true } )
-				this.data({ ... dict , [id]: merged })
-			}
+		@ $mol_mem
+		filter( next?: typeof Res_list_filter.Value ) {
+			return next
 		}
-		
+
 		@ $mol_mem
 		list() {
 			return Object.keys( this.data() ).map(
@@ -120,9 +121,14 @@ namespace $ {
 
 		@ $mol_mem_key
 		Item( id : string ) {
-			const obj = this.sub( id , new $aspirity_account_invoice( this.data()[ id ] ) )
+			const obj = this.sub( id , this.Invoice( id ) )
 			obj.list = $mol_const( this )
 			return obj
+		}
+
+		@ $mol_mem_key
+		Invoice( id: string ) {
+			return new $aspirity_account_invoice( this.value( id ) )
 		}
 		
 	}
@@ -131,6 +137,17 @@ namespace $ {
 
 		list(): $aspirity_account_invoice_list {
 			return this.$.$mol_fail( new Error( 'Not implemented' ) )
+		}
+
+		@ $mol_mem
+		load_full() {
+			if ( !this.value('loaded') ) {
+				const res = this.$.$aspirity_account_transport.load( `_next/data/CyYy66KHAhtQN5bEooLAa/invoice/${this.id()}.json` )
+				const { pageProps } = Res_invoice_page( res )
+				const merged = Object.assign( {} , this.data(), pageProps, { loaded: true } )
+				return this.data( merged )
+			}
+			return this.data()
 		}
 
 		id() {
@@ -145,7 +162,7 @@ namespace $ {
 			return this.value( 'contractorName' )
 		}
 
-		theme() {
+		subject() {
 			return this.value( 'theme' )
 		}
 
@@ -155,6 +172,11 @@ namespace $ {
 
 		employee_names() {
 			return this.value( 'employeesNames' )
+		}
+
+		@ $mol_mem
+		company() {
+			return this.value( 'companyDetails' )
 		}
 
 	}

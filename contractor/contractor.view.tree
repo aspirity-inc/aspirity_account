@@ -1,0 +1,34 @@
+$aspirity_account_contractor $mol_page
+	title @ \New contractor
+	body /
+		<= Form $mol_form
+			form_fields /
+				<= Company $mol_form_field
+					name @ \Company name
+					bid <= company_bid \
+					control <= Company_control $mol_string
+						value?val <=> company?val \
+				<= Phone $mol_form_field
+					name @ \Phone
+					bid <= phone_bid \
+					control <= Phone_control $mol_string
+						value?val <=> phone?val \
+				<= Email $mol_form_field
+					name @ \Email
+					bid <= email_bid \
+					control <= Email_control $mol_string
+						value?val <=> email?val \
+				<= Comment $mol_form_field
+					name @ \Comment
+					bid <= comment_bid \
+					control <= Comment_control $mol_textarea
+						value?val <=> comment?val \
+				<= Contact $mol_form_field
+					name @ \Contact person
+					bid <= contact_bid \
+					control <= Contact_control $aspirity_account_contact_select
+						value?val <=> contact?val \
+			buttons /
+				<= Submit $mol_button_major
+					title @ \Create
+					click?val <=> submit?val null

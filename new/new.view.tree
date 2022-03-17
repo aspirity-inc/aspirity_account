@@ -1,0 +1,115 @@
+$aspirity_account_new $mol_page
+	title @ \Creating an invoice
+	body /
+		<= List $mol_list
+			rows /
+				<= New $mol_form
+					form_fields /
+						<= Subject $mol_form_field
+							name @ \Subject
+							bid <= subject_bid \
+							control <= Subject_control $mol_string
+								value?val <=> subject?val \
+						<= Number $mol_form_field
+							name @ \Invoice number
+							bid <= number_bid \
+							control <= Number_control $mol_string
+								value?val <=> number?val \
+						<= Status $mol_form_field
+							name @ \Status
+							bid <= status_bid \
+							control <= Status_control $mol_select
+								value?val <=> status?val \
+								dictionary <= status_dict *
+						<= Contractor $mol_form_field
+							name @ \Contractor
+							bid <= contractor_bid \
+							control <= Contractor_control $mol_bar
+								sub /
+									<= Contractor_select $mol_select
+										value?val <=> contractor?val \
+										dictionary <= contractor_dict *
+									<= Contractor_add $mol_link
+										arg * contractor \
+										sub / <= Contractor_add_icon $mol_icon_plus
+						<= Contact $mol_form_field
+							name @ \Contact person
+							bid <= contact_bid \
+							control <= Contact_control $mol_bar
+								sub /
+									<= Contact_select $mol_select
+										value?val <=> contact?val \
+										dictionary <= contact_dict *
+									<= Contact_add $mol_link
+										arg * contact \
+										sub / <= Contact_add_icon $mol_icon_plus
+						<= Terms $mol_form_field
+							name @ \Terms & Conditions
+							bid <= terms_bid \
+							control <= Terms_control $mol_textarea
+								minimal_height 120
+								value?val <=> terms?val \
+						<= Date $mol_form_field
+							name @ \Date of payment
+							bid <= date_bid \
+							control <= Date_control $aspirity_account_new_date
+								value?val <=> date?val \
+						<= Invoice $mol_form_field
+							name @ \Printed invoice form
+							bid <= invoice_bid \
+							control <= Invoice_control $mol_select
+								value?val <=> invoice?val \
+								dictionary <= invoice_dict *
+						<= Company $mol_form_field
+							name @ \Company
+							bid <= company_bid \
+							control <= Company_control $mol_select
+								value?val <=> company?val \
+								dictionary <= company_dict *
+						<= Currency $mol_form_field
+							name @ \Currency
+							bid <= currency_bid \
+							control <= Currency_control $mol_select
+								value?val <=> currency?val \
+								dictionary <= currency_dict *
+						<= Table_field $mol_form_field
+							label /
+							Content <= Table_content $mol_view
+								sub <= table_content /
+									<= Table $mol_list
+										rows <= rows /
+					buttons /
+						<= Add $mol_button_major
+							title @ \Add row
+							click?val <=> row_add?val null
+						<= Total $mol_labeler
+							title @ \Total
+							content / <= total \0
+	Row!id $mol_form
+		form_fields /
+			<= People!id $mol_form_field
+				name @ \People
+				bid <= people_bid!id \
+				control <= People_control!id $mol_select
+					value?val <=> people!id?val \
+			<= Position!id $mol_form_field
+				name @ \Position
+				bid <= position_bid!id \
+				control <= Position_control!id $mol_select
+					value?val <=> position!id?val \
+			<= Rate!id $mol_form_field
+				name @ \Rate
+				bid <= rate_bid!id \
+				control <= Rate_control!id $mol_string
+					value?val <=> rate!id?val \0
+			<= Time!id $mol_form_field
+				name @ \Hours
+				bid <= time_bid!id \
+				control <= Time_control!id $mol_string
+					value?val <=> time!id?val \0
+			<= Price!id $mol_form_field
+				name @ \Price
+				Content <= Price_content!id $mol_view
+					sub / <= price!id \0
+$aspirity_account_new_date $mol_date
+	hint \YYYY-MM-DD

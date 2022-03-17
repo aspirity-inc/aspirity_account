@@ -1,10 +1,54 @@
 $aspirity_account_browse $mol_page
+	filter false
 	domain $aspirity_account_domain
 	title @ \Invoices
-	body /
+	tools /
+		<= New $mol_link
+			arg * new \
+			sub / <= New_icon $mol_icon_plus
+		<= Filter_toggle $mol_link
+			arg *
+				filter \
+				filter_subject null
+				filter_company null
+				filter_contractor null
+			sub / <= Filter_toggle_icon $mol_icon_filter
+		<= Sign_out $mol_button_typed
+			click?val <=> sign_out?val null
+			sub / <= Sign_out_icon $mol_icon_logout_variant
+	body <= page_body /
 		<= List $mol_list
 			rows <= links /
 	Link!id $mol_link
 		arg *
 			invoice <= invoice_link!id \
-		sub / <= invoice_title!id \
+		sub /
+			<= Invoice_title!id $mol_dimmer
+				haystack <= invoice_title!id \
+				needle <= query
+	Filter $mol_view
+		sub /
+			<= Search $mol_search
+				query?val <=> query?val \
+				suggests <= suggests / 
+			- <= Select $mol_view
+				sub /
+					<= Subject $aspirity_account_browse_select
+						value?val <=> filter_subject?val \
+						options <= filter_subject_options /
+						title @ \Subject
+					<= Company $aspirity_account_browse_select
+						value?val <=> filter_company?val \
+						options <= filter_company_options /
+						title @ \Company
+					<= Contractor $aspirity_account_browse_select
+						value?val <=> filter_contractor?val \
+						options <= filter_contractor_options /
+						title @ \Contractor
+$aspirity_account_browse_select $mol_select
+	title \
+	Clear $mol_button_minor
+		hint @ \Clear
+		click?event <=> clear?event null
+		sub /
+			<= Clear_icon $mol_icon_cross

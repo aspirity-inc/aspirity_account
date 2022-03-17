@@ -4,6 +4,13 @@ $aspirity_account $mol_book2
 		<= Sign_in $aspirity_account_sign_in
 		<= Browse $aspirity_account_browse
 			domain <= domain
+			filter <= filter_enabled false
+		<= New $aspirity_account_new
+		<= Contractor $aspirity_account_contractor
+		<= Contact $aspirity_account_contact
 	Invoice!id $aspirity_account_invoice_page
 		invoice <= invoice!id $aspirity_account_invoice
 		domain <= domain
+	Placeholder $mol_page
+		Title null
+		Tools null

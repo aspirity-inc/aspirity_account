@@ -3,7 +3,7 @@ namespace $ {
 	export class $aspirity_account_transport extends $mol_object2 {
 
 		static api_base() {
-			return 'https://corssroc.herokuapp.com/https://helpmate.int.aspirity.com/_next/data/CyYy66KHAhtQN5bEooLAa/'
+			return 'https://corssroc.herokuapp.com/https://helpmate.int.aspirity.com/'
 		}
 
 		@ $mol_mem

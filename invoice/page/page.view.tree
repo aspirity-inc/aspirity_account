@@ -1,7 +1,17 @@
 $aspirity_account_invoice_page $mol_page
 	domain $aspirity_account_domain
 	invoice $aspirity_account_invoice
-	title @ \Invoice
+	tools /
+		<= Download $mol_link
+			hint @ \Download PDF
+			uri <= download_link \https://www.google.com/search?q=PDF+not+working
+			sub /
+				<= Download_icon $mol_icon_download
+		<= Close $mol_link
+			hint @ \Close page
+			arg * invoice null
+			sub / <= Close_icon $mol_icon_cross
+	title <= invoice_title \
 	statuses *
 		draft \Draft
 	body /
@@ -21,17 +31,20 @@ $aspirity_account_invoice_page $mol_page
 					content / <= contractor \
 		<= Company $mol_row
 			sub /
-				<= Logo $mol_image2
-					background <= logo \
 				<= Name_full $mol_labeler
 					title @ \Full name
 					content / <= name_full \
 				<= Name_short $mol_labeler
 					title @ \Name short
 					content / <= name_short \
+		<= Address_row $mol_row
+			sub /
 				<= Address_actual $mol_labeler
 					title @ \Actual address
 					content / <= address_actual \
-				<= Address_ref $mol_labeler
+				<= Address_reg $mol_labeler
 					title @ \Registered address
 					content / <= address_reg \
+		<= Logo $mol_image
+			uri <= logo \
+			title @ \Logo

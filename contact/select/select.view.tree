@@ -1,0 +1,8 @@
+$aspirity_account_contact_select $mol_view
+	sub /
+		<= Select $mol_select
+			value?val <=> value?val \
+			dictionary <= dict *
+		<= Add $mol_link
+			arg * contact \
+			sub / <= Add_icon $mol_icon_plus
